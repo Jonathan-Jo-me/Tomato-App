@@ -1,0 +1,67 @@
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.7.2/docs/install/iam_policy.json -OutFile iam_policy.json
+
+------------------------------------------
+trust-policy.json
+
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+    {
+    "Effect": "Allow",
+    "Principal": {
+    "Federated":
+    "arn:aws:iam::836759839628:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/DCF744EDA6C113942C9B02F1C22007A3"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+    "StringEquals": {
+    "oidc.eks.ap-south-1.amazonaws.com/id/DCF744EDA6C113942C9B02F1C22007A3:sub":
+    "system:serviceaccount:kube-system:aws-load-balancer-controller",
+    "oidc.eks.ap-south-1.amazonaws.com/id/DCF744EDA6C113942C9B02F1C22007A3:aud": "sts.amazonaws.com"
+    }
+    }
+    }
+    ]
+    }
+
+
+aws iam create-role --role-name AWSLoadBalancerControllerIAMRole --assume-role-policy-document file://trust-policy.json
+
+
+aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+
+eksctl create iamserviceaccount --cluster=food-delivery-cluster --namespace=kube-system --name=aws-load-balancer-controller --role-name AmazonEKSLoadBalancerControllerRole --attach-policy-arn=arn:aws:iam::836759839628:policy/AWSLoadBalancerControllerIAMPolicy --approve --region ap-south-1
+
+eksctl utils associate-iam-oidc-provider --region=ap-south-1 --cluster=food-delivery-cluster --approve
+
+
+#helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=my-cluster --set #serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller 
+
+-------------------
+
+helm show values eks/aws-load-balancer-controller > values.yaml
+
+# Default values for aws-load-balancer-controller.
+clusterName: food-delivery-cluster  # Replace with your cluster name
+serviceAccount:
+  create: false
+  name: aws-load-balancer-controller
+
+# AWS configuration
+region: ap-south-1          # Replace with your desired region
+vpcId: vpc-xxxxxxxx         # Replace with your actual VPC ID
+
+# Other configuration options can go here
+
+-----------------------------------
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system -f values.yaml
+
+
+
+
+
+
+
+

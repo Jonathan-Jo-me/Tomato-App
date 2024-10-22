@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing  # Use "internal" for private ALB
+    alb.ingress.kubernetes.io/target-type: ip  # Use "instance" for EC2-based targets
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'  # For HTTP
+    # alb.ingress.kubernetes.io/subnets: subnet-02563f0c6aecde7cd,subnet-0b524a9f52c9d1a69
+    # alb.ingress.kubernetes.io/security-groups: sg-0e19264d9f0c9a5d7,sg-02e9757e77ee6c445
+    
+
+spec:
+  ingressClassName: alb
+  rules:
+    - host: {{ .Values.ingress.backend.host }}  
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: {{ .Values.backend.port }}
+    - host: {{ .Values.ingress.frontend.host }}  
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: {{ .Values.frontend.port }}

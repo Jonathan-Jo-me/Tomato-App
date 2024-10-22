@@ -1,0 +1,11 @@
+FROM node:16-alpine
+WORKDIR /app
+COPY package*.json ./
+COPY . .
+RUN npm install
+ENV JWT_SECRET="random#secret"
+ENV STRIPE_SECRET_KEY="sk_test_51PMSaPP6f1AqVFYztCwlMRcQzXXj0DYdoPk5cjFk4jaAFBL7ujmmtN2I4AprH4DzNVjmdRoxYnZv3gAzTWBB3XjM007VItT313"
+ENV MONGODB_URI="mongodb+srv://arangarajan:arangarajan@cluster0.r8rzl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0 "
+ENV PORT="4000"
+EXPOSE 4000
+CMD ["npm", "run", "dev"]

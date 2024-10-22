@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  MONGODB_URI: "{{ .Values.backend.mongodbUri }}"
+  PORT: "{{ .Values.backend.port }}"

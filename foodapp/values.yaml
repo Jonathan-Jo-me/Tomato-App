@@ -1,0 +1,27 @@
+frontend:
+  image:
+    repository: jonathan02/tomato
+    tag: frontend
+  replicas: 1
+  port: 5173
+  backendUrl: "http://backend.jonathanjo.great-site.net"
+
+backend:
+  image:
+    repository: jonathan02/tomato
+    tag: backend
+  replicas: 1
+  port: 4000
+  mongodbUri: "mongodb+srv://arangarajan:arangarajan@cluster0.r8rzl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+  jwtSecret: "cGFyYW1zY2Vk"
+  stripeSecretKey: "c2tfdGVzdF8xU01TUGFQNmYxQXFYZ0ZJWi1aMEtYQm5LVmNlMA=="
+
+# Ingress values
+ingress:
+  backend:
+    host: backend.jonathanjo.great-site.net
+    port: 4000
+  frontend:
+    host: frontend.jonathanjo.great-site.net
+    port: 5173
+
